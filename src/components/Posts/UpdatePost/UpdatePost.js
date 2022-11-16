@@ -1,26 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { updatePost } from "../../../api/services";
 import { useUpdatePost } from "../../../hooks/useUpdatePost";
 
 const UpdatePost = ({ id }) => {
+  const queryClient = useQueryClient();
 
-  const {
-    data: getPostData
-  } = useUpdatePost(id);
+  const { data: getPostData } = useUpdatePost(id);
 
   const {
     mutate: updatePostData,
     status: updateStatus,
     error: updateError,
-  } = useMutation((data) => updatePost(data));
+  } = useMutation(updatePost, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allPosts"]);
+      console.log("updatePost")
+    },
+  });
 
-  const { register: inputUpdatePost, handleSubmit: submitUpdatePost, reset } =
-    useForm();
-
-    
+  const {
+    register: inputUpdatePost,
+    handleSubmit: submitUpdatePost,
+    reset,
+  } = useForm();
 
   const onSubmitUpdate = (data) => updatePostData(data);
   const defaultValues = {};
@@ -32,17 +37,16 @@ const UpdatePost = ({ id }) => {
       getPostData && (defaultValues.title = getPostData.title);
       getPostData && (defaultValues.body = getPostData.body);
       reset({ ...defaultValues });
-    }
-    fetchUserId()
+    };
+    fetchUserId();
   }, [getPostData]);
-
 
   return (
     <>
       {updateStatus === "loading" && <p>Updating...</p>}
       {updateStatus === "error" && <p>Error: {updateError}</p>}
       {updateStatus === "success" && <p>Updated. </p>}
-      {getPostData &&
+      {getPostData && (
         <form
           onSubmit={submitUpdatePost(onSubmitUpdate)}
           style={{ paddingLeft: "24px" }}
@@ -77,7 +81,7 @@ const UpdatePost = ({ id }) => {
           <br />
           <input type="submit" value={"Submit"} />
         </form>
-      }
+      )}
     </>
   );
 };

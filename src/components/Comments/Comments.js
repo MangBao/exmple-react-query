@@ -1,25 +1,32 @@
 import { useComments } from "../../hooks/useComments";
+import { Box, CircularProgress, Container } from "@mui/material";
 
 const Comments = ({ params }) => {
   const { status, data, error } = useComments(params);
 
   return (
     <>
-      {status === "loading" && <p>Loading...</p>}
-      {status === "error" && <p>Error: {error}</p>}
-      {
-        <ul>
-          {data?.map((cmt) => (
-            <li key={cmt.id}>
-              <h4>{cmt.name}</h4>
-              <p>{cmt.body}</p>
-              <button>Delete</button>
+      <Container>
+        {status === "loading" && (
+          <Box sx={{ height: "100%", paddingLeft: "18px", paddingTop: "16px" }}>
+            <CircularProgress />
+          </Box>
+        )}
+        {status === "error" && <p>Error: {error}</p>}
+        {
+          <ul style={{ listStyle: "none" }}>
+            {data?.map((cmt) => (
+              <li key={cmt.id}>
+                <h4>{cmt.name}</h4>
+                <p>{cmt.body}</p>
+                <button>Delete</button>
 
-              <br />
-            </li>
-          ))}
-        </ul>
-      }
+                <br />
+              </li>
+            ))}
+          </ul>
+        }
+      </Container>
     </>
   );
 };

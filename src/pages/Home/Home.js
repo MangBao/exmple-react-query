@@ -1,9 +1,9 @@
-import Tabs from "../../components/Tabs";
+import ListTabs from "../../components/ListTabs";
 
 const Home = () => {
   return (
     <>
-      <Tabs />
+      <ListTabs />
     </>
   );
 };
